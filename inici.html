@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pistes Sorpresa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #42ffb3, #39e18d);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .contenidor-botons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .boto-pista {
+            background: linear-gradient(to right, #ff1d1d, #ff2323);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .boto-pista:hover {
+            transform: scale(1.05);
+        }
+
+        .pista-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 80%;
+            max-width: 400px;
+            background-color: white;
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .pista-modal.oberta {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .tancar-modal {
+            margin-top: 15px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tancar-modal:hover {
+            background-color: #ff5a4a;
+        }
+
+        .noms-flotants {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .titol-joc {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .etiqueta-nom {
+            position: absolute;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: max-content;
+            transition: top 5.0s linear, left 5.0s linear;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        .popup.activa {
+            display: block;
+        }
+
+        .fons {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .fons.activa {
+            display: block;
+        }
+
+        canvas.confetti-canvas {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 9999 !important;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="nom-destinacio">Endevina qui soc!</h1>
+    <div class="contenidor-botons">
+        <button class="boto-pista" data-pista="pista1">Pista 1</button>
+        <button class="boto-pista" data-pista="pista2">Pista 2</button>
+        <button class="boto-pista" data-pista="pista3">Ja ho saps?</button>
+    </div>
+
+    <div class="pista-modal" id="pista1">
+        <p>La primera !</p>
+        <button class="tancar-modal" onclick="tancarPista()">Tanca</button>
+    </div>
+
+    <div class="pista-modal" id="pista2">
+        <p>La segona pista és que porto menys d'una dècada siguent adult/a!</p>
+        <button class="tancar-modal" onclick="tancarPista()">Tanca</button>
+    </div>
+
+    <div class="pista-modal" id="pista3">
+        <h2 class="titol-joc">Toca el meu nom!</h2>
+        <div class="noms-flotants" id="joc-noms"></div>
+        <button class="tancar-modal" onclick="tancarPista()">Tanca</button>
+    </div>
+
+    <div class="popup" id="popup">
+        <p id="text-popup"></p>
+        <button onclick="tancarPopup()">Tanca</button>
+    </div>
+
+    <div class="fons" id="fons" onclick="tancarPopup()"></div>
+
+    <script>
+        const botons = document.querySelectorAll('.boto-pista');
+        const modalPistes = document.querySelectorAll('.pista-modal');
+        const popup = document.getElementById('popup');
+        const fons = document.getElementById('fons');
+        const textPopup = document.getElementById('text-popup');
+        const jocNoms = document.getElementById('joc-noms');
+
+        const noms = ["David", "Montse", "Estel", "Marta", "JSR", "JSP", "Dolors", "Pau"];
+
+        const confettiCanvas = document.createElement('canvas');
+        confettiCanvas.classList.add('confetti-canvas');
+        document.body.appendChild(confettiCanvas);
+
+        const confettiInstance = confetti.create(confettiCanvas, {
+            resize: true,
+            useWorker: true
+        });
+
+        function comprovarNom(nom) {
+            if (nom === "Pau") {
+                textPopup.textContent = `M'has trobat! Sóc en Pau!`;
+                confettiInstance({
+                    particleCount: 200,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            } else {
+                textPopup.textContent = `Torna-ho a intentar...`;
+            }
+            popup.classList.add('activa');
+            fons.classList.add('activa');
+        }
+
+        function crearNomsFlotants() {
+            noms.forEach(nom => {
+                const etiqueta = document.createElement('div');
+                etiqueta.classList.add('etiqueta-nom');
+                etiqueta.textContent = nom;
+                etiqueta.style.top = Math.random() * 80 + "%";
+                etiqueta.style.left = Math.random() * 80 + "%";
+                etiqueta.onclick = () => comprovarNom(nom);
+                jocNoms.appendChild(etiqueta);
+            });
+        }
+
+        function moureNoms() {
+            const etiquetes = document.querySelectorAll('.etiqueta-nom');
+            etiquetes.forEach(etiqueta => {
+                etiqueta.style.top = Math.random() * 80 + "%";
+                etiqueta.style.left = Math.random() * 80 + "%";
+            });
+        }
+
+        botons.forEach(boto => {
+            boto.addEventListener('click', () => {
+                const id = boto.getAttribute('data-pista');
+                document.getElementById(id).classList.add('oberta');
+            });
+        });
+
+        function tancarPista() {
+            modalPistes.forEach(modal => modal.classList.remove('oberta'));
+        }
+
+        function tancarPopup() {
+            popup.classList.remove('activa');
+            fons.classList.remove('activa');
+        }
+
+        setInterval(moureNoms, 5000);
+
+        crearNomsFlotants();
+    </script>
+</body>
+</html>
