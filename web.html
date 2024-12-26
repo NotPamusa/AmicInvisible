@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pistes Sorpresa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #42ffb3, #39e18d);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .contenidor-botons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .boto-pista {
+            background: linear-gradient(to right, #ff1d1d, #ff2323);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .boto-pista:hover {
+            transform: scale(1.05);
+        }
+
+        .boto-pista[data-pista="pista3"] {
+            margin-top: 20px;
+            background: linear-gradient(to right, #4CAF50, #66BB6A);
+            color: white;
+        }
+
+        .boto-pista[data-pista="pista3"]:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #388E3C, #43A047);
+        }
+
+        .pista-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 80%;
+            max-width: 400px;
+            background-color: white;
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .pista-modal.oberta {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .tancar-modal {
+            margin-top: 15px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tancar-modal:hover {
+            background-color: #ff5a4a;
+        }
+
+        .noms-flotants {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .etiqueta-nom {
+            position: absolute;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: max-content;
+            transition: top 5.0s linear, left 5.0s linear;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        .popup.activa {
+            display: block;
+        }
+
+        .fons {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .fons.activa {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- CONTINGUT IGUAL, CAP CANVI NECESSARI EN L'HTML -->
+</body>
+<script>
+    botons.forEach(boto => {
+        boto.addEventListener('click', () => {
+            const id = boto.getAttribute('data-pista');
+            const modal = document.getElementById(id);
+            modal.classList.add('oberta');
+            if (id === "pista3") {
+                setTimeout(moureNoms, 100); // Inicia immediatament el moviment
+            }
+        });
+    });
+</script>
+</html>
